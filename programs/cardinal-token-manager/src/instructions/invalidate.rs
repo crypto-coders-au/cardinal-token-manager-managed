@@ -32,7 +32,7 @@ pub struct InvalidateCtx<'info> {
     )]
     invalidator: Signer<'info>,
     /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut)]
+    #[account(mut, constraint = assert_collector(&collector.key()))]
     collector: AccountInfo<'info>,
     token_program: Program<'info, Token>,
     rent: Sysvar<'info, Rent>,
@@ -130,7 +130,7 @@ pub fn handler<'key, 'accounts, 'remaining, 'info>(ctx: Context<'key, 'accounts,
             // close token_manager_token_account
             let cpi_accounts = CloseAccount {
                 account: ctx.accounts.token_manager_token_account.to_account_info(),
-                destination: ctx.accounts.collector.to_account_info(),
+                destination: ctx.accounts.collector.to_account_info(), // collector of rent
                 authority: token_manager.to_account_info(),
             };
             let cpi_program = ctx.accounts.token_program.to_account_info();
@@ -146,7 +146,7 @@ pub fn handler<'key, 'accounts, 'remaining, 'info>(ctx: Context<'key, 'accounts,
             // close token_manager_token_account
             let cpi_accounts = CloseAccount {
                 account: ctx.accounts.token_manager_token_account.to_account_info(),
-                destination: ctx.accounts.collector.to_account_info(),
+                destination: ctx.accounts.collector.to_account_info(), // collector of rent
                 authority: token_manager.to_account_info(),
             };
             let cpi_program = ctx.accounts.token_program.to_account_info();
@@ -169,7 +169,7 @@ pub fn handler<'key, 'accounts, 'remaining, 'info>(ctx: Context<'key, 'accounts,
             // close token_manager_token_account
             let cpi_accounts = CloseAccount {
                 account: ctx.accounts.token_manager_token_account.to_account_info(),
-                destination: ctx.accounts.collector.to_account_info(),
+                destination: ctx.accounts.collector.to_account_info(), // collector of rent
                 authority: token_manager.to_account_info(),
             };
             let cpi_program = ctx.accounts.token_program.to_account_info();
@@ -179,7 +179,7 @@ pub fn handler<'key, 'accounts, 'remaining, 'info>(ctx: Context<'key, 'accounts,
             // close token_manager
             token_manager.state = TokenManagerState::Invalidated as u8;
             token_manager.state_changed_at = Clock::get().unwrap().unix_timestamp;
-            token_manager.close(ctx.accounts.collector.to_account_info())?;
+            token_manager.close(ctx.accounts.collector.to_account_info())?; // collector of rent
         }
         t if t == InvalidationType::Reissue as u8 => {
             // transfer back to token_manager

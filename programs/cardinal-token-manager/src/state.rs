@@ -141,6 +141,15 @@ pub fn assert_payment_manager(key: &Pubkey) -> bool {
     allowed_payment_managers.contains(key)
 }
 
+pub fn assert_collector(key: &Pubkey) -> bool {
+    let allowed_collectors = [
+        Pubkey::from_str("crkdpVWjHWdggGgBuSyAqSmZUmAjYLzD435tcLDRLXr").unwrap(),
+        Pubkey::from_str("cprtEVpR3uPs38USVq1MYrPMW7exZTnq2kRNSuvjvYM").unwrap(),
+        Pubkey::from_str("AXqdfTru4hNG5JPoxTDq1UAZ7YPT86pvuxMj6yUSoyNZ").unwrap(), // cryptocoders
+    ];
+    allowed_collectors.contains(key)
+}
+
 pub const RECEIPT_MINT_MANAGER_SEED: &str = "receipt-mint-manager";
 pub const RECEIPT_MINT_MANAGER_SIZE: usize = 8 + std::mem::size_of::<ReceiptMintManager>() + 8;
 #[account]
